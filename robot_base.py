@@ -118,55 +118,14 @@ class CapteurLidar:
     def connecter(self):
         """Ouvre la connexion série et démarre le moteur du lidar.
 
-        Séquence robuste :
-        1. Crée l'objet et tente un disconnect() pour clore toute session zombi
-        2. Reconnecte proprement
-        3. Envoie STOP pour interrompre tout scan en cours
-        4. Vide le buffer série d'entrée directement (_serial.reset_input_buffer)
-        5. Tente get_info() avec 3 essais
+        Séquence identique à test_lidar.py qui fonctionne :
+        connect() → get_info() → start_motor()
         """
         self._lidar = RPLidar(config.LIDAR_PORT, baudrate=config.LIDAR_BAUDRATE)
-        # Étape 1 : fermer une éventuelle session précédente
-        try:
-            self._lidar.disconnect()
-        except Exception:
-            pass
-        time.sleep(1)
-
-        # Étape 2 : connexion propre
         self._lidar.connect()
-
-        # Étape 3 : envoyer STOP pour couper tout scan en cours côté lidar
-        try:
-            self._lidar.stop()
-        except Exception:
-            pass
-
-        # Étape 4 : vider physiquement le buffer série entrant
-        try:
-            self._lidar._serial.reset_input_buffer()
-        except Exception:
-            pass
-        time.sleep(1)
-
-        # Étape 5 : get_info() avec retry + flush entre chaque essai
-        for tentative in range(3):
-            try:
-                info = self._lidar.get_info()
-                logger.info("Lidar connecté : %s", info)
-                break
-            except Exception as e:
-                logger.warning("get_info() tentative %d/3 échouée : %s", tentative + 1, e)
-                try:
-                    self._lidar._serial.reset_input_buffer()
-                except Exception:
-                    pass
-                time.sleep(1)
-                if tentative == 2:
-                    raise
-
+        logger.info("Lidar connecté : %s", self._lidar.get_info())
         self._lidar.start_motor()
-        time.sleep(2)  # laisser le moteur monter en vitesse
+        time.sleep(1)
 
     def demarrer(self):
         """Lance le thread d'acquisition."""

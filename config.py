@@ -6,7 +6,7 @@
 # LIDAR
 # ============================================================
 LIDAR_PORT     = "/dev/ttyUSB0"
-LIDAR_BAUDRATE = 115200
+LIDAR_BAUDRATE = 256000
 
 # ============================================================
 # PROPULSION — HardwarePWM channel 0, 50 Hz
