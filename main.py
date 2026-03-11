@@ -15,6 +15,7 @@ import sys
 import threading
 import time
 
+
 import conduite_reactive
 from robot_base import Actionneurs, CapteurLidar
 

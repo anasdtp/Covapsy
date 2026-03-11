@@ -170,9 +170,13 @@ class CapteurLidar:
                     # Chaque 'scan' est une liste de tuples (quality, angle, distance_mm)
                     for _, angle, distance in scan:
                         # Le 0° physique du lidar pointe vers l'ARRIÈRE de la voiture.
-                        # Correction : décalage de 180° + inversion du sens de rotation
-                        # pour que tableau_mm[0] = devant, tableau_mm[90] = gauche.
-                        idx = (180 - int(angle)) % 360
+                        # Les angles physiques entre -90° et +90° (soit 0-90° et 270-360°)
+                        # visent l'intérieur/dessous de la voiture → on les ignore.
+                        a = int(angle) % 360
+                        if a <= 90 or a >= 270:
+                            continue
+                        # Correction : décalage de 180° pour que tableau_mm[0] = devant.
+                        idx = (180 - a) % 360
                         self._acqui_mm[idx] = distance
                     with self._lock:
                         self._nouveau_scan = True
