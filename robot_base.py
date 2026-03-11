@@ -116,10 +116,31 @@ class CapteurLidar:
         self._lock            = threading.Lock()
 
     def connecter(self):
-        """Ouvre la connexion série et démarre le moteur du lidar."""
+        """Ouvre la connexion série et démarre le moteur du lidar.
+
+        Un disconnect() préalable vide le tampon série pour éviter
+        l'erreur 'Descriptor length mismatch' en cas de session précédente
+        non terminée proprement (même approche que raz_lidar.py).
+        """
         self._lidar = RPLidar(config.LIDAR_PORT, baudrate=config.LIDAR_BAUDRATE)
+        # Vider le tampon série avant de communiquer
+        try:
+            self._lidar.disconnect()
+        except Exception:
+            pass
+        time.sleep(1)
         self._lidar.connect()
-        logger.info("Lidar connecté : %s", self._lidar.get_info())
+        # Tentatives de get_info avec retry en cas de résidu série
+        for tentative in range(3):
+            try:
+                info = self._lidar.get_info()
+                logger.info("Lidar connecté : %s", info)
+                break
+            except Exception as e:
+                logger.warning("get_info() tentative %d/3 échouée : %s", tentative + 1, e)
+                time.sleep(1)
+                if tentative == 2:
+                    raise
         self._lidar.start_motor()
         time.sleep(2)  # laisser le moteur monter en vitesse
 
