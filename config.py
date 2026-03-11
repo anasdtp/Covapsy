@@ -30,12 +30,13 @@ ANGLE_DEGRE_MAX  = 18   # angle max en degrés (vers la gauche)
 # ============================================================
 # CONDUITE AUTONOME
 # ============================================================
-BOUCLE_PERIODE_S     = 0.01   # période de la boucle de contrôle (10 ms)
-DISTANCE_MUR_MM      = 600    # distance d'alerte obstacle (mm) — élargie pour les tests
-DISTANCE_STOP_MM     = 300    # distance d'arrêt d'urgence (mm) — élargie pour les tests
-VITESSE_CROISIERE_M_S = 0.2   # vitesse de croisière en couloir libre (m/s) — MODE TEST
-K_SUIVI_COULOIR      = 0.02   # gain du correcteur de suivi de couloir (°/mm)
-TIMEOUT_BLOCAGE_S    = 2.0    # délai avant déclenchement séquence de recul (s)
+BOUCLE_PERIODE_S       = 0.01   # période de la boucle de contrôle (10 ms)
+DISTANCE_MUR_AVANT_MM  = 400    # seuil obstacle FRONTAL (mm) — uniquement devant
+DISTANCE_MUR_COTE_MM   = 250    # seuil obstacle LATÉRAL avant-gauche/avant-droit (mm)
+DISTANCE_STOP_MM       = 200    # distance d'arrêt d'urgence (mm)
+VITESSE_CROISIERE_M_S  = 0.2    # vitesse de croisière en couloir libre (m/s) — MODE TEST
+K_SUIVI_COULOIR        = 0.02   # gain du correcteur de suivi de couloir (°/mm)
+TIMEOUT_BLOCAGE_S      = 2.0    # délai avant déclenchement séquence de recul (s)
 
 # ============================================================
 # SÉQUENCE DE RECUL

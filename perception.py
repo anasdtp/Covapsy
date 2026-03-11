@@ -59,9 +59,11 @@ def analyser(tableau_mm: list) -> dict:
     d_droit         = distance_secteur(tableau_mm, -90, demi_angle=20)
 
     # --- Détection de blocage (obstacle dans la zone de danger) ---
-    mur_avant       = 0 < d_avant        < config.DISTANCE_MUR_MM
-    mur_avant_gauche = 0 < d_avant_gauche < config.DISTANCE_MUR_MM
-    mur_avant_droit  = 0 < d_avant_droit  < config.DISTANCE_MUR_MM
+    # Seuil frontal strict (400 mm) et seuil latéral plus petit (250 mm)
+    # pour ne pas détecter les murs du couloir comme obstacles latéraux
+    mur_avant        = 0 < d_avant        < config.DISTANCE_MUR_AVANT_MM
+    mur_avant_gauche = 0 < d_avant_gauche < config.DISTANCE_MUR_COTE_MM
+    mur_avant_droit  = 0 < d_avant_droit  < config.DISTANCE_MUR_COTE_MM
 
     # --- Calcul de l'angle de suivi de couloir ---
     # Différence entre les distances à ±60° : si symétrique → angle=0
@@ -75,9 +77,8 @@ def analyser(tableau_mm: list) -> dict:
         vitesse_consigne = config.VITESSE_CROISIERE_M_S
     elif d_avant < config.DISTANCE_STOP_MM:
         vitesse_consigne = 0.0
-    elif d_avant < config.DISTANCE_MUR_MM:
-        # Proportionnel : ralentissement progressif
-        ratio = (d_avant - config.DISTANCE_STOP_MM) / (config.DISTANCE_MUR_MM - config.DISTANCE_STOP_MM)
+    elif d_avant < config.DISTANCE_MUR_AVANT_MM:
+        ratio = (d_avant - config.DISTANCE_STOP_MM) / (config.DISTANCE_MUR_AVANT_MM - config.DISTANCE_STOP_MM)
         vitesse_consigne = ratio * config.VITESSE_CROISIERE_M_S
     else:
         vitesse_consigne = config.VITESSE_CROISIERE_M_S

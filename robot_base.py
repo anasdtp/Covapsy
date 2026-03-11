@@ -169,9 +169,10 @@ class CapteurLidar:
                 for scan in self._lidar.iter_scans(scan_type='express'):
                     # Chaque 'scan' est une liste de tuples (quality, angle, distance_mm)
                     for _, angle, distance in scan:
-                        # Convention : 0° = devant, sens anti-horaire positif
-                        # Le lidar renvoie les angles dans le sens contraire → inversion
-                        idx = min(359, max(0, 359 - int(angle)))
+                        # Le 0° physique du lidar pointe vers l'ARRIÈRE de la voiture.
+                        # Correction : décalage de 180° + inversion du sens de rotation
+                        # pour que tableau_mm[0] = devant, tableau_mm[90] = gauche.
+                        idx = (180 - int(angle)) % 360
                         self._acqui_mm[idx] = distance
                     with self._lock:
                         self._nouveau_scan = True
