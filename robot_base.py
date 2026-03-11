@@ -118,19 +118,38 @@ class CapteurLidar:
     def connecter(self):
         """Ouvre la connexion série et démarre le moteur du lidar.
 
-        Un disconnect() préalable vide le tampon série pour éviter
-        l'erreur 'Descriptor length mismatch' en cas de session précédente
-        non terminée proprement (même approche que raz_lidar.py).
+        Séquence robuste :
+        1. Crée l'objet et tente un disconnect() pour clore toute session zombi
+        2. Reconnecte proprement
+        3. Envoie STOP pour interrompre tout scan en cours
+        4. Vide le buffer série d'entrée directement (_serial.reset_input_buffer)
+        5. Tente get_info() avec 3 essais
         """
         self._lidar = RPLidar(config.LIDAR_PORT, baudrate=config.LIDAR_BAUDRATE)
-        # Vider le tampon série avant de communiquer
+        # Étape 1 : fermer une éventuelle session précédente
         try:
             self._lidar.disconnect()
         except Exception:
             pass
         time.sleep(1)
+
+        # Étape 2 : connexion propre
         self._lidar.connect()
-        # Tentatives de get_info avec retry en cas de résidu série
+
+        # Étape 3 : envoyer STOP pour couper tout scan en cours côté lidar
+        try:
+            self._lidar.stop()
+        except Exception:
+            pass
+
+        # Étape 4 : vider physiquement le buffer série entrant
+        try:
+            self._lidar._serial.reset_input_buffer()
+        except Exception:
+            pass
+        time.sleep(1)
+
+        # Étape 5 : get_info() avec retry + flush entre chaque essai
         for tentative in range(3):
             try:
                 info = self._lidar.get_info()
@@ -138,9 +157,14 @@ class CapteurLidar:
                 break
             except Exception as e:
                 logger.warning("get_info() tentative %d/3 échouée : %s", tentative + 1, e)
+                try:
+                    self._lidar._serial.reset_input_buffer()
+                except Exception:
+                    pass
                 time.sleep(1)
                 if tentative == 2:
                     raise
+
         self._lidar.start_motor()
         time.sleep(2)  # laisser le moteur monter en vitesse
 
