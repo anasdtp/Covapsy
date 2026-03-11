@@ -16,7 +16,7 @@ PWM_STOP_PROP       = 7.36  # duty cycle correspondant à l'arrêt (1.5 ms)
 POINT_MORT_PROP     = 0.41  # seuil minimal en dessous duquel la voiture ne bouge pas
 DELTA_PWM_MAX_PROP  = 1.0   # plage PWM entre l'arrêt et la vitesse maximale
 VITESSE_MAX_M_S_HARD = 8.0  # vitesse physique maximale de la voiture (m/s)
-VITESSE_MAX_M_S_SOFT = 1.0  # vitesse logicielle maximale en autonome (m/s)
+VITESSE_MAX_M_S_SOFT = 0.3  # vitesse logicielle maximale en autonome (m/s) — MODE TEST
 
 # ============================================================
 # DIRECTION — HardwarePWM channel 1, 50 Hz
@@ -31,14 +31,14 @@ ANGLE_DEGRE_MAX  = 18   # angle max en degrés (vers la gauche)
 # CONDUITE AUTONOME
 # ============================================================
 BOUCLE_PERIODE_S     = 0.01   # période de la boucle de contrôle (10 ms)
-DISTANCE_MUR_MM      = 400    # distance d'alerte obstacle (mm) — taille d'une voiture
-DISTANCE_STOP_MM     = 200    # distance d'arrêt d'urgence (mm)
-VITESSE_CROISIERE_M_S = 0.5   # vitesse de croisière en couloir libre (m/s)
+DISTANCE_MUR_MM      = 600    # distance d'alerte obstacle (mm) — élargie pour les tests
+DISTANCE_STOP_MM     = 300    # distance d'arrêt d'urgence (mm) — élargie pour les tests
+VITESSE_CROISIERE_M_S = 0.2   # vitesse de croisière en couloir libre (m/s) — MODE TEST
 K_SUIVI_COULOIR      = 0.02   # gain du correcteur de suivi de couloir (°/mm)
 TIMEOUT_BLOCAGE_S    = 2.0    # délai avant déclenchement séquence de recul (s)
 
 # ============================================================
 # SÉQUENCE DE RECUL
 # ============================================================
-VITESSE_RECUL_M_S  = -1.0   # vitesse lors du recul
-DUREE_RECUL_S      = 0.5    # durée du recul
+VITESSE_RECUL_M_S  = -0.5   # vitesse lors du recul — MODE TEST
+DUREE_RECUL_S      = 0.4    # durée du recul
